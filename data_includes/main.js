@@ -210,17 +210,28 @@ function choiceTrial(label, row) {
         newText("confidence-prompt", "How confident are you in your choice?")
             .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
         ,
+        newText("confidence-hint", "Click a number or press the matching key.")
+            .cssContainer({ "font-size": "16px", "text-align": "center", "width": "760px" })
+        ,
+        newText("confidence-low", "Not confident")
+            .cssContainer({ "font-size": "17px", "font-weight": "600", "text-align": "right", "width": "140px" })
+        ,
+        newText("confidence-high", "Very confident")
+            .cssContainer({ "font-size": "17px", "font-weight": "600", "text-align": "left", "width": "140px" })
+        ,
         newScale("confidence", "1", "2", "3", "4", "5")
-            .labelsPosition("top")
-            .before(newText("confidence-low", "Not confident"))
-            .after(newText("confidence-high", "Very confident"))
-            .cssContainer({ "font-size": "18px", "margin": "28px auto", "text-align": "center" })
+            .button()
+            .keys("1", "2", "3", "4", "5")
+            .cssContainer({ "font-size": "24px", "text-align": "center" })
             .log()
         ,
-        newCanvas("confidence-screen", 760, 180)
+        newCanvas("confidence-screen", 900, 260)
             .add("center at 50%", 0, getText("confidence-prompt"))
-            .add("center at 50%", 80, getScale("confidence"))
-            .print("center at 50vw", "top at 28vh")
+            .add("center at 50%", 44, getText("confidence-hint"))
+            .add(70, 126, getText("confidence-low"))
+            .add("center at 50%", 110, getScale("confidence"))
+            .add(690, 126, getText("confidence-high"))
+            .print("center at 50vw", "top at 26vh")
         ,
         getScale("confidence")
             .wait()
