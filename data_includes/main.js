@@ -149,20 +149,35 @@ function choiceTrial(label, row) {
             .size(240, 240)
         ,
         newText("left-key", "F")
-            .cssContainer({ "font-size": "22px", "font-weight": "700", "text-align": "center" })
+            .cssContainer({
+                "background": "#222",
+                "border-radius": "4px",
+                "color": "#fff",
+                "font-size": "22px",
+                "font-weight": "700",
+                "line-height": "1",
+                "padding": "8px 14px",
+                "text-align": "center"
+            })
         ,
         newText("right-key", "J")
-            .cssContainer({ "font-size": "22px", "font-weight": "700", "text-align": "center" })
+            .cssContainer({
+                "background": "#222",
+                "border-radius": "4px",
+                "color": "#fff",
+                "font-size": "22px",
+                "font-weight": "700",
+                "line-height": "1",
+                "padding": "8px 14px",
+                "text-align": "center"
+            })
         ,
-        newCanvas("display", 680, 310)
-            .add(40, 0, getImage("left-image"))
-            .add(480, 0, getImage("right-image"))
-            .add(145, 260, getText("left-key"))
-            .add(585, 260, getText("right-key"))
-        ,
-        newCanvas("trial-screen", 760, 390)
+        newCanvas("trial-screen", 760, 430)
             .add("center at 50%", 0, getText("prompt"))
-            .add("center at 50%", 70, getCanvas("display"))
+            .add(100, 82, getImage("left-image"))
+            .add(420, 82, getImage("right-image"))
+            .add(198, 350, getText("left-key"))
+            .add(518, 350, getText("right-key"))
             .print("center at 50vw", "top at 18vh")
             .log()
         ,
