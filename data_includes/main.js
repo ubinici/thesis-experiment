@@ -47,13 +47,13 @@ newTrial("instructions",
     newButton("start", "Start practice")
         .css(primaryButtonStyle())
     ,
-    newCanvas("instructions-screen", 920, 460)
+    newCanvas("instructions-screen", 920, 560)
         .add("center at 50%", 0, getText("title"))
         .add("center at 50%", 92, getText("instructions-1"))
         .add("center at 50%", 178, getText("instructions-2"))
         .add("center at 50%", 264, getText("instructions-3"))
         .add("center at 50%", 388, getButton("start"))
-        .print("center at 50vw", "top at 16vh")
+        .print("center at 50vw", "top at 12vh")
     ,
     getButton("start")
         .wait()
@@ -91,11 +91,11 @@ newTrial("attention-1",
     newText("keys", "Press F for the left option or J for the right option.")
         .css(stageHintStyle())
     ,
-    newCanvas("attention-screen", 920, 260)
+    newCanvas("attention-screen", 920, 560)
         .add("center at 50%", 0, getText("title"))
-        .add("center at 50%", 90, getText("question"))
-        .add("center at 50%", 150, getText("keys"))
-        .print("center at 50vw", "top at 22vh")
+        .add("center at 50%", 168, getText("question"))
+        .add("center at 50%", 226, getText("keys"))
+        .print("center at 50vw", "top at 12vh")
     ,
     newVar("attention_expected_key", "")
         .set(getVar("lastAttentionKey"))
@@ -151,11 +151,11 @@ newTrial("attention-2",
     newText("keys", "Press F for the left option or J for the right option.")
         .css(stageHintStyle())
     ,
-    newCanvas("attention-screen", 920, 260)
+    newCanvas("attention-screen", 920, 560)
         .add("center at 50%", 0, getText("title"))
-        .add("center at 50%", 90, getText("question"))
-        .add("center at 50%", 150, getText("keys"))
-        .print("center at 50vw", "top at 22vh")
+        .add("center at 50%", 168, getText("question"))
+        .add("center at 50%", 226, getText("keys"))
+        .print("center at 50vw", "top at 12vh")
     ,
     newVar("attention_expected_key", "")
         .set(getVar("lastAttentionKey"))
@@ -207,10 +207,10 @@ newTrial("completion",
     newText("close", "You may now close this window.")
         .css(stageHintStyle())
     ,
-    newCanvas("completion-screen", 920, 190)
+    newCanvas("completion-screen", 920, 560)
         .add("center at 50%", 0, getText("done"))
-        .add("center at 50%", 90, getText("close"))
-        .print("center at 50vw", "top at 24vh")
+        .add("center at 50%", 168, getText("close"))
+        .print("center at 50vw", "top at 12vh")
     ,
     newTimer("end", 1)
         .wait()
@@ -355,17 +355,17 @@ function choiceTrial(label, row) {
             .keys("1", "2", "3", "4", "5")
             .log()
         ,
-        newCanvas("confidence-screen", 920, 320)
+        newCanvas("confidence-screen", 920, 560)
             .add("center at 50%", 0, getText("confidence-prompt"))
-            .add("center at 50%", 46, getText("confidence-hint"))
-            .add(108, 154, getText("confidence-low"))
-            .add(286, 136, getButton("confidence-1"))
-            .add(372, 136, getButton("confidence-2"))
-            .add(458, 136, getButton("confidence-3"))
-            .add(544, 136, getButton("confidence-4"))
-            .add(630, 136, getButton("confidence-5"))
-            .add(730, 154, getText("confidence-high"))
-            .print("center at 50vw", "top at 22vh")
+            .add("center at 50%", 58, getText("confidence-hint"))
+            .add(154, 244, getText("confidence-low"))
+            .add(294, 222, getButton("confidence-1"))
+            .add(380, 222, getButton("confidence-2"))
+            .add(466, 222, getButton("confidence-3"))
+            .add(552, 222, getButton("confidence-4"))
+            .add(638, 222, getButton("confidence-5"))
+            .add(732, 244, getText("confidence-high"))
+            .print("center at 50vw", "top at 12vh")
         ,
         getSelector("confidence")
             .wait()
@@ -472,7 +472,7 @@ function endpointLabelStyle(alignment) {
         "font-weight": "700",
         "line-height": "1.2",
         "text-align": alignment,
-        "width": "150px"
+        "width": "130px"
     };
 }
 
