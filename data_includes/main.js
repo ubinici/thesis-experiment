@@ -219,22 +219,69 @@ function choiceTrial(label, row) {
         newText("confidence-high", "Very confident")
             .cssContainer({ "font-size": "17px", "font-weight": "600", "text-align": "left", "width": "140px" })
         ,
-        newScale("confidence", "1", "2", "3", "4", "5")
-            .button()
+        newVar("confidence_response", "")
+            .log("final")
+        ,
+        newText("confidence-1", "1")
+            .cssContainer(confidenceOptionStyle())
+        ,
+        newText("confidence-2", "2")
+            .cssContainer(confidenceOptionStyle())
+        ,
+        newText("confidence-3", "3")
+            .cssContainer(confidenceOptionStyle())
+        ,
+        newText("confidence-4", "4")
+            .cssContainer(confidenceOptionStyle())
+        ,
+        newText("confidence-5", "5")
+            .cssContainer(confidenceOptionStyle())
+        ,
+        newSelector("confidence")
+            .add(
+                getText("confidence-1"),
+                getText("confidence-2"),
+                getText("confidence-3"),
+                getText("confidence-4"),
+                getText("confidence-5")
+            )
             .keys("1", "2", "3", "4", "5")
-            .cssContainer({ "font-size": "24px", "text-align": "center" })
             .log()
         ,
         newCanvas("confidence-screen", 900, 260)
             .add("center at 50%", 0, getText("confidence-prompt"))
             .add("center at 50%", 44, getText("confidence-hint"))
-            .add(70, 126, getText("confidence-low"))
-            .add("center at 50%", 110, getScale("confidence"))
-            .add(690, 126, getText("confidence-high"))
+            .add(70, 136, getText("confidence-low"))
+            .add(262, 118, getText("confidence-1"))
+            .add(348, 118, getText("confidence-2"))
+            .add(434, 118, getText("confidence-3"))
+            .add(520, 118, getText("confidence-4"))
+            .add(606, 118, getText("confidence-5"))
+            .add(690, 136, getText("confidence-high"))
             .print("center at 50vw", "top at 26vh")
         ,
-        getScale("confidence")
+        getSelector("confidence")
             .wait()
+        ,
+        getSelector("confidence")
+            .test.selected(getText("confidence-1"))
+            .success(getVar("confidence_response").set("1"))
+        ,
+        getSelector("confidence")
+            .test.selected(getText("confidence-2"))
+            .success(getVar("confidence_response").set("2"))
+        ,
+        getSelector("confidence")
+            .test.selected(getText("confidence-3"))
+            .success(getVar("confidence_response").set("3"))
+        ,
+        getSelector("confidence")
+            .test.selected(getText("confidence-4"))
+            .success(getVar("confidence_response").set("4"))
+        ,
+        getSelector("confidence")
+            .test.selected(getText("confidence-5"))
+            .success(getVar("confidence_response").set("5"))
     )
     .log("participant_id", participantId)
     .log("trial_type", row.trial_type)
@@ -257,6 +304,21 @@ function choiceTrial(label, row) {
     .log("attention_question", row.attention_question)
     .log("attention_key", row.attention_key)
     .log("correct_key", row.correct_key);
+}
+
+function confidenceOptionStyle() {
+    return {
+        "background": "#fff",
+        "border": "2px solid #222",
+        "border-radius": "6px",
+        "cursor": "pointer",
+        "font-size": "28px",
+        "font-weight": "700",
+        "height": "58px",
+        "line-height": "58px",
+        "text-align": "center",
+        "width": "58px"
+    };
 }
 
 function attentionTrial(label, title) {
