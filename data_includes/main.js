@@ -3,6 +3,7 @@ PennController.ResetPrefix(null);
 // Keep the debugger visible while developing. Uncomment before real data collection.
 // DebugOff();
 
+var showProgressBar = false;
 const participantId = GetURLParameter("id") || "NO_ID";
 
 // For counterbalanced collection later, uncomment this line.
@@ -44,26 +45,27 @@ newTrial("init",
 
 newTrial("instructions",
     newText("title", "Referential prediction experiment")
-        .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
+        .css(stageTitleStyle())
     ,
     newText("instructions-1", "On each trial, you will see two objects and hear the beginning of a description, such as \"Click on the yellow...\"")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "width": "720px" })
+        .css(stageParagraphStyle())
     ,
     newText("instructions-2", "Press F to choose the left object or J to choose the right object. Then rate how confident you are in your choice.")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "width": "720px" })
+        .css(stageParagraphStyle())
     ,
     newText("instructions-3", "Some displays may be grayscale. In those cases, answer based on which object you think the speaker is more likely to describe.")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "width": "720px" })
+        .css(stageParagraphStyle())
     ,
     newButton("start", "Start practice")
+        .css(primaryButtonStyle())
     ,
-    newCanvas("instructions-screen", 760, 420)
+    newCanvas("instructions-screen", 920, 460)
         .add("center at 50%", 0, getText("title"))
-        .add(20, 90, getText("instructions-1"))
-        .add(20, 170, getText("instructions-2"))
-        .add(20, 250, getText("instructions-3"))
-        .add("center at 50%", 360, getButton("start"))
-        .print("center at 50vw", "top at 18vh")
+        .add("center at 50%", 92, getText("instructions-1"))
+        .add("center at 50%", 178, getText("instructions-2"))
+        .add("center at 50%", 264, getText("instructions-3"))
+        .add("center at 50%", 388, getButton("start"))
+        .print("center at 50vw", "top at 16vh")
     ,
     getButton("start")
         .wait()
@@ -71,41 +73,24 @@ newTrial("instructions",
 .log("participant_id", participantId)
 .setOption("countsForProgressBar", false);
 
-Template(
-    GetTable("items.csv").filter(row => row.trial_type == "practice"),
-    row => choiceTrial(row)
-);
-
-Template(
-    GetTable("items.csv")
-        .filter(row => row.block == "1")
-        .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
-    row => choiceTrial(row)
-);
-
-Template(
-    GetTable("items.csv")
-        .filter(row => row.block == "2")
-        .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
-    row => choiceTrial(row)
-);
+Template("items.csv", row => choiceTrial(row));
 
 newTrial("attention-1",
     newText("title", "Attention check 1")
-        .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
+        .css(stageTitleStyle())
     ,
     newText("question", "")
         .text(getVar("lastAttentionQuestion"))
-        .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
+        .css(stageQuestionStyle())
     ,
     newText("keys", "Press F for the left option or J for the right option.")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "text-align": "center", "width": "720px" })
+        .css(stageHintStyle())
     ,
-    newCanvas("attention-screen", 760, 220)
+    newCanvas("attention-screen", 920, 260)
         .add("center at 50%", 0, getText("title"))
         .add("center at 50%", 90, getText("question"))
-        .add("center at 50%", 145, getText("keys"))
-        .print("center at 50vw", "top at 24vh")
+        .add("center at 50%", 150, getText("keys"))
+        .print("center at 50vw", "top at 22vh")
     ,
     newVar("attention_expected_key", "")
         .set(getVar("lastAttentionKey"))
@@ -152,20 +137,20 @@ newTrial("attention-1",
 
 newTrial("attention-2",
     newText("title", "Attention check 2")
-        .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
+        .css(stageTitleStyle())
     ,
     newText("question", "")
         .text(getVar("lastAttentionQuestion"))
-        .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
+        .css(stageQuestionStyle())
     ,
     newText("keys", "Press F for the left option or J for the right option.")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "text-align": "center", "width": "720px" })
+        .css(stageHintStyle())
     ,
-    newCanvas("attention-screen", 760, 220)
+    newCanvas("attention-screen", 920, 260)
         .add("center at 50%", 0, getText("title"))
         .add("center at 50%", 90, getText("question"))
-        .add("center at 50%", 145, getText("keys"))
-        .print("center at 50vw", "top at 24vh")
+        .add("center at 50%", 150, getText("keys"))
+        .print("center at 50vw", "top at 22vh")
     ,
     newVar("attention_expected_key", "")
         .set(getVar("lastAttentionKey"))
@@ -212,12 +197,12 @@ newTrial("attention-2",
 
 newTrial("completion",
     newText("done", "Thank you. Your responses have been recorded.")
-        .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
+        .css(stageTitleStyle())
     ,
     newText("close", "You may now close this window.")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "text-align": "center", "width": "720px" })
+        .css(stageHintStyle())
     ,
-    newCanvas("completion-screen", 760, 180)
+    newCanvas("completion-screen", 920, 190)
         .add("center at 50%", 0, getText("done"))
         .add("center at 50%", 90, getText("close"))
         .print("center at 50vw", "top at 24vh")
@@ -257,13 +242,13 @@ function choiceTrial(row) {
             .set(row.right_role)
         ,
         newText("prompt", "Listen to the description and choose the more likely referent.")
-            .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
+            .css(stageQuestionStyle())
         ,
         newImage("left-image", row.left_image)
-            .size(240, 240)
+            .size(300, 300)
         ,
         newImage("right-image", row.right_image)
-            .size(240, 240)
+            .size(300, 300)
         ,
         newText("left-key", "F")
             .cssContainer({
@@ -289,13 +274,13 @@ function choiceTrial(row) {
                 "text-align": "center"
             })
         ,
-        newCanvas("trial-screen", 760, 430)
+        newCanvas("trial-screen", 920, 560)
             .add("center at 50%", 0, getText("prompt"))
-            .add(100, 82, getImage("left-image"))
-            .add(420, 82, getImage("right-image"))
-            .add(198, 350, getText("left-key"))
-            .add(518, 350, getText("right-key"))
-            .print("center at 50vw", "top at 18vh")
+            .add(80, 112, getImage("left-image"))
+            .add(540, 112, getImage("right-image"))
+            .add(202, 444, getText("left-key"))
+            .add(662, 444, getText("right-key"))
+            .print("center at 50vw", "top at 12vh")
             .log()
         ,
         newAudio("cue", row.audio)
@@ -325,16 +310,16 @@ function choiceTrial(row) {
         clear()
         ,
         newText("confidence-prompt", "How confident are you in your choice?")
-            .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
+            .css(stageQuestionStyle())
         ,
         newText("confidence-hint", "Click a number or press the matching key.")
-            .cssContainer({ "font-size": "16px", "text-align": "center", "width": "760px" })
+            .css(stageHintStyle())
         ,
         newText("confidence-low", "Not confident")
-            .cssContainer({ "font-size": "17px", "font-weight": "600", "text-align": "right", "width": "140px" })
+            .css(endpointLabelStyle("right"))
         ,
         newText("confidence-high", "Very confident")
-            .cssContainer({ "font-size": "17px", "font-weight": "600", "text-align": "left", "width": "140px" })
+            .css(endpointLabelStyle("left"))
         ,
         newVar("confidence_response", "")
             .log("final")
@@ -365,17 +350,17 @@ function choiceTrial(row) {
             .keys("1", "2", "3", "4", "5")
             .log()
         ,
-        newCanvas("confidence-screen", 900, 260)
+        newCanvas("confidence-screen", 920, 320)
             .add("center at 50%", 0, getText("confidence-prompt"))
-            .add("center at 50%", 44, getText("confidence-hint"))
-            .add(44, 136, getText("confidence-low"))
-            .add(260, 112, getButton("confidence-1"))
-            .add(346, 112, getButton("confidence-2"))
-            .add(432, 112, getButton("confidence-3"))
-            .add(518, 112, getButton("confidence-4"))
-            .add(604, 112, getButton("confidence-5"))
-            .add(716, 136, getText("confidence-high"))
-            .print("center at 50vw", "top at 26vh")
+            .add("center at 50%", 46, getText("confidence-hint"))
+            .add(108, 154, getText("confidence-low"))
+            .add(286, 136, getButton("confidence-1"))
+            .add(372, 136, getButton("confidence-2"))
+            .add(458, 136, getButton("confidence-3"))
+            .add(544, 136, getButton("confidence-4"))
+            .add(630, 136, getButton("confidence-5"))
+            .add(730, 154, getText("confidence-high"))
+            .print("center at 50vw", "top at 22vh")
         ,
         getSelector("confidence")
             .wait()
@@ -436,5 +421,53 @@ function confidenceButtonStyle() {
         "padding": "0",
         "text-align": "center",
         "width": "58px"
+    };
+}
+
+function stageTitleStyle() {
+    return {
+        "font-size": "30px",
+        "font-weight": "700",
+        "line-height": "1.2",
+        "text-align": "center",
+        "width": "920px"
+    };
+}
+
+function stageQuestionStyle() {
+    return {
+        "font-size": "24px",
+        "font-weight": "700",
+        "line-height": "1.25",
+        "text-align": "center",
+        "width": "920px"
+    };
+}
+
+function stageParagraphStyle() {
+    return {
+        "font-size": "19px",
+        "line-height": "1.45",
+        "text-align": "left",
+        "width": "760px"
+    };
+}
+
+function stageHintStyle() {
+    return {
+        "font-size": "17px",
+        "line-height": "1.4",
+        "text-align": "center",
+        "width": "920px"
+    };
+}
+
+function endpointLabelStyle(alignment) {
+    return {
+        "font-size": "17px",
+        "font-weight": "700",
+        "line-height": "1.2",
+        "text-align": alignment,
+        "width": "150px"
     };
 }
