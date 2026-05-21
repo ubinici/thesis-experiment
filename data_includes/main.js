@@ -73,7 +73,24 @@ newTrial("instructions",
 .log("participant_id", participantId)
 .setOption("countsForProgressBar", false);
 
-Template("items.csv", row => choiceTrial(row));
+Template(
+    GetTable("items.csv").filter(row => row.trial_type == "practice"),
+    row => choiceTrial("practice", row)
+);
+
+Template(
+    GetTable("items.csv")
+        .filter(row => row.block == "1")
+        .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
+    row => choiceTrial("main-block-1", row)
+);
+
+Template(
+    GetTable("items.csv")
+        .filter(row => row.block == "2")
+        .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
+    row => choiceTrial("main-block-2", row)
+);
 
 newTrial("attention-1",
     newText("title", "Attention check 1")
@@ -213,10 +230,10 @@ newTrial("completion",
 .log("participant_id", participantId)
 .setOption("countsForProgressBar", false);
 
-function choiceTrial(row) {
+function choiceTrial(label, row) {
     const hasCorrectKey = row.correct_key == "F" || row.correct_key == "J";
 
-    return newTrial(row.sequence_label,
+    return newTrial(label,
         newVar("choice_key", "")
             .log("final")
         ,
@@ -386,7 +403,6 @@ function choiceTrial(row) {
             .success(getVar("confidence_response").set("5"))
     )
     .log("participant_id", participantId)
-    .log("sequence_label", row.sequence_label)
     .log("trial_type", row.trial_type)
     .log("block", row.block)
     .log("item_id", row.item_id)
