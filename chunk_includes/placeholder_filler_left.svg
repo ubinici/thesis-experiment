@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <rect width="240" height="240" rx="8" fill="#f4d35e"/>
+  <path d="M120 48c34 0 64 28 64 62 0 48-64 84-64 84s-64-36-64-84c0-34 30-62 64-62z" fill="#4f9a58"/>
+  <text x="120" y="215" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#242424">FILLER LEFT</text>
+</svg>

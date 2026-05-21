@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <rect width="240" height="240" rx="8" fill="#d8d8d8"/>
+  <rect x="62" y="58" width="116" height="92" rx="12" fill="#9a9a9a"/>
+  <rect x="82" y="150" width="76" height="36" rx="6" fill="#6d6d6d"/>
+  <text x="120" y="215" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#242424">VARIABLE</text>
+</svg>
