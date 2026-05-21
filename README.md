@@ -38,6 +38,8 @@ For critical trials, both objects share the named color in visible displays, and
 
 Attention checks are text-only. They ask a row-specific question about the immediately preceding trial, such as "Which option was the banana?", and score the answer against `attention_key`.
 
+The development template does not run a full-block `CheckPreloaded` gate, because that can make testing painfully slow and can mask missing-resource errors as a long loading wait. PCIbex will still load resources as trials run. Add a preload check back only once final assets are small, uploaded, and stable.
+
 ## Editing Stimuli
 
 Replace placeholder filenames in `chunk_includes/items.csv` as final stimuli become available. The important columns are:
