@@ -44,29 +44,28 @@ newTrial("init",
 
 newTrial("instructions",
     newText("title", "Referential prediction experiment")
-        .cssContainer({ "font-size": "28px", "font-weight": "700", "margin": "0 auto 24px", "text-align": "center" })
-        .center()
-        .print()
+        .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
     ,
     newText("instructions-1", "On each trial, you will see two objects and hear the beginning of a description, such as \"Click on the yellow...\"")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "margin": "14px auto", "max-width": "720px" })
-        .center()
-        .print()
+        .cssContainer({ "font-size": "18px", "line-height": "1.45", "width": "720px" })
     ,
     newText("instructions-2", "Press F to choose the left object or J to choose the right object. Then rate how confident you are in your choice.")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "margin": "14px auto", "max-width": "720px" })
-        .center()
-        .print()
+        .cssContainer({ "font-size": "18px", "line-height": "1.45", "width": "720px" })
     ,
     newText("instructions-3", "Some displays may be grayscale. In those cases, answer based on which object you think the speaker is more likely to describe.")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "margin": "14px auto", "max-width": "720px" })
-        .center()
-        .print()
+        .cssContainer({ "font-size": "18px", "line-height": "1.45", "width": "720px" })
     ,
     newButton("start", "Start practice")
-        .cssContainer({ "margin": "24px auto 0", "text-align": "center" })
-        .center()
-        .print()
+    ,
+    newCanvas("instructions-screen", 760, 420)
+        .add("center at 50%", 0, getText("title"))
+        .add(20, 90, getText("instructions-1"))
+        .add(20, 170, getText("instructions-2"))
+        .add(20, 250, getText("instructions-3"))
+        .add("center at 50%", 360, getButton("start"))
+        .print("center at 50vw", "top at 18vh")
+    ,
+    getButton("start")
         .wait()
 )
 .log("participant_id", participantId)
@@ -96,14 +95,15 @@ attentionTrial("attention-2", "Attention check 2");
 
 newTrial("completion",
     newText("done", "Thank you. Your responses have been recorded.")
-        .cssContainer({ "font-size": "28px", "font-weight": "700", "margin": "0 auto 24px", "text-align": "center" })
-        .center()
-        .print()
+        .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
     ,
     newText("close", "You may now close this window.")
-        .cssContainer({ "font-size": "18px", "line-height": "1.45", "margin": "14px auto", "max-width": "720px" })
-        .center()
-        .print()
+        .cssContainer({ "font-size": "18px", "line-height": "1.45", "text-align": "center", "width": "720px" })
+    ,
+    newCanvas("completion-screen", 760, 180)
+        .add("center at 50%", 0, getText("done"))
+        .add("center at 50%", 90, getText("close"))
+        .print("center at 50vw", "top at 24vh")
     ,
     newTimer("end", 1)
         .wait()
@@ -140,9 +140,7 @@ function choiceTrial(label, row) {
             .set(row.right_role)
         ,
         newText("prompt", "Listen to the description and choose the more likely referent.")
-            .cssContainer({ "font-size": "20px", "font-weight": "600", "margin": "0 auto 22px", "text-align": "center" })
-            .center()
-            .print()
+            .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
         ,
         newImage("left-image", row.left_image)
             .size(240, 240)
@@ -161,9 +159,11 @@ function choiceTrial(label, row) {
             .add(480, 0, getImage("right-image"))
             .add(145, 260, getText("left-key"))
             .add(585, 260, getText("right-key"))
-            .cssContainer({ "margin": "0 auto 24px", "display": "block" })
-            .center()
-            .print()
+        ,
+        newCanvas("trial-screen", 760, 390)
+            .add("center at 50%", 0, getText("prompt"))
+            .add("center at 50%", 70, getCanvas("display"))
+            .print("center at 50vw", "top at 18vh")
             .log()
         ,
         newAudio("cue", row.audio)
@@ -193,18 +193,21 @@ function choiceTrial(label, row) {
         clear()
         ,
         newText("confidence-prompt", "How confident are you in your choice?")
-            .cssContainer({ "font-size": "20px", "font-weight": "600", "margin": "0 auto 22px", "text-align": "center" })
-            .center()
-            .print()
+            .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
         ,
         newScale("confidence", "1", "2", "3", "4", "5")
             .labelsPosition("top")
             .before(newText("confidence-low", "Not confident"))
             .after(newText("confidence-high", "Very confident"))
             .cssContainer({ "font-size": "18px", "margin": "28px auto", "text-align": "center" })
-            .center()
             .log()
-            .print()
+        ,
+        newCanvas("confidence-screen", 760, 180)
+            .add("center at 50%", 0, getText("confidence-prompt"))
+            .add("center at 50%", 80, getScale("confidence"))
+            .print("center at 50vw", "top at 28vh")
+        ,
+        getScale("confidence")
             .wait()
     )
     .log("participant_id", participantId)
@@ -233,20 +236,20 @@ function choiceTrial(label, row) {
 function attentionTrial(label, title) {
     return newTrial(label,
         newText("title", title)
-            .cssContainer({ "font-size": "28px", "font-weight": "700", "margin": "0 auto 24px", "text-align": "center" })
-            .center()
-            .print()
+            .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
         ,
         newText("question", "")
             .text(getVar("lastAttentionQuestion"))
-            .cssContainer({ "font-size": "20px", "font-weight": "600", "margin": "0 auto 22px", "text-align": "center" })
-            .center()
-            .print()
+            .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
         ,
         newText("keys", "Press F for the left option or J for the right option.")
-            .cssContainer({ "font-size": "18px", "line-height": "1.45", "margin": "14px auto", "max-width": "720px", "text-align": "center" })
-            .center()
-            .print()
+            .cssContainer({ "font-size": "18px", "line-height": "1.45", "text-align": "center", "width": "720px" })
+        ,
+        newCanvas("attention-screen", 760, 220)
+            .add("center at 50%", 0, getText("title"))
+            .add("center at 50%", 90, getText("question"))
+            .add("center at 50%", 145, getText("keys"))
+            .print("center at 50vw", "top at 24vh")
         ,
         newVar("attention_expected_key", "")
             .set(getVar("lastAttentionKey"))
