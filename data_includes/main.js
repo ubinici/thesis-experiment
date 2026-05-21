@@ -73,25 +73,142 @@ newTrial("instructions",
 
 Template(
     GetTable("items.csv").filter(row => row.trial_type == "practice"),
-    row => choiceTrial("practice", row)
+    row => choiceTrial(row)
 );
 
 Template(
     GetTable("items.csv")
         .filter(row => row.block == "1")
         .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
-    row => choiceTrial("main-block-1", row)
+    row => choiceTrial(row)
 );
 
 Template(
     GetTable("items.csv")
         .filter(row => row.block == "2")
         .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
-    row => choiceTrial("main-block-2", row)
+    row => choiceTrial(row)
 );
 
-attentionTrial("attention-1", "Attention check 1");
-attentionTrial("attention-2", "Attention check 2");
+newTrial("attention-1",
+    newText("title", "Attention check 1")
+        .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
+    ,
+    newText("question", "")
+        .text(getVar("lastAttentionQuestion"))
+        .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
+    ,
+    newText("keys", "Press F for the left option or J for the right option.")
+        .cssContainer({ "font-size": "18px", "line-height": "1.45", "text-align": "center", "width": "720px" })
+    ,
+    newCanvas("attention-screen", 760, 220)
+        .add("center at 50%", 0, getText("title"))
+        .add("center at 50%", 90, getText("question"))
+        .add("center at 50%", 145, getText("keys"))
+        .print("center at 50vw", "top at 24vh")
+    ,
+    newVar("attention_expected_key", "")
+        .set(getVar("lastAttentionKey"))
+        .log("final")
+    ,
+    newVar("attention_previous_item", "")
+        .set(getVar("lastItemId"))
+        .log("final")
+    ,
+    newVar("attention_previous_left_role", "")
+        .set(getVar("lastLeftRole"))
+        .log("final")
+    ,
+    newVar("attention_previous_right_role", "")
+        .set(getVar("lastRightRole"))
+        .log("final")
+    ,
+    newVar("attention_response_key", "")
+        .log("final")
+    ,
+    newVar("attention_correct", "0")
+        .log("final")
+    ,
+    newKey("attention", "FJ")
+        .log("first")
+        .wait()
+    ,
+    getVar("attention_response_key")
+        .set(getKey("attention"))
+    ,
+    getKey("attention")
+        .test.pressed(getVar("lastAttentionKey"))
+        .success(getVar("attention_correct").set("1"))
+        .failure(getVar("attention_correct").set("0"))
+    ,
+    newTimer("attention-pause", 250)
+        .start()
+        .wait()
+)
+.log("participant_id", participantId)
+.log("trial_type", "attention")
+.log("attention_label", "attention-1")
+.setOption("countsForProgressBar", false);
+
+newTrial("attention-2",
+    newText("title", "Attention check 2")
+        .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
+    ,
+    newText("question", "")
+        .text(getVar("lastAttentionQuestion"))
+        .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
+    ,
+    newText("keys", "Press F for the left option or J for the right option.")
+        .cssContainer({ "font-size": "18px", "line-height": "1.45", "text-align": "center", "width": "720px" })
+    ,
+    newCanvas("attention-screen", 760, 220)
+        .add("center at 50%", 0, getText("title"))
+        .add("center at 50%", 90, getText("question"))
+        .add("center at 50%", 145, getText("keys"))
+        .print("center at 50vw", "top at 24vh")
+    ,
+    newVar("attention_expected_key", "")
+        .set(getVar("lastAttentionKey"))
+        .log("final")
+    ,
+    newVar("attention_previous_item", "")
+        .set(getVar("lastItemId"))
+        .log("final")
+    ,
+    newVar("attention_previous_left_role", "")
+        .set(getVar("lastLeftRole"))
+        .log("final")
+    ,
+    newVar("attention_previous_right_role", "")
+        .set(getVar("lastRightRole"))
+        .log("final")
+    ,
+    newVar("attention_response_key", "")
+        .log("final")
+    ,
+    newVar("attention_correct", "0")
+        .log("final")
+    ,
+    newKey("attention", "FJ")
+        .log("first")
+        .wait()
+    ,
+    getVar("attention_response_key")
+        .set(getKey("attention"))
+    ,
+    getKey("attention")
+        .test.pressed(getVar("lastAttentionKey"))
+        .success(getVar("attention_correct").set("1"))
+        .failure(getVar("attention_correct").set("0"))
+    ,
+    newTimer("attention-pause", 250)
+        .start()
+        .wait()
+)
+.log("participant_id", participantId)
+.log("trial_type", "attention")
+.log("attention_label", "attention-2")
+.setOption("countsForProgressBar", false);
 
 newTrial("completion",
     newText("done", "Thank you. Your responses have been recorded.")
@@ -111,10 +228,10 @@ newTrial("completion",
 .log("participant_id", participantId)
 .setOption("countsForProgressBar", false);
 
-function choiceTrial(label, row) {
+function choiceTrial(row) {
     const hasCorrectKey = row.correct_key == "F" || row.correct_key == "J";
 
-    return newTrial(label,
+    return newTrial(row.sequence_label,
         newVar("choice_key", "")
             .log("final")
         ,
@@ -222,28 +339,28 @@ function choiceTrial(label, row) {
         newVar("confidence_response", "")
             .log("final")
         ,
-        newText("confidence-1", "1")
-            .cssContainer(confidenceOptionStyle())
+        newButton("confidence-1", "1")
+            .css(confidenceButtonStyle())
         ,
-        newText("confidence-2", "2")
-            .cssContainer(confidenceOptionStyle())
+        newButton("confidence-2", "2")
+            .css(confidenceButtonStyle())
         ,
-        newText("confidence-3", "3")
-            .cssContainer(confidenceOptionStyle())
+        newButton("confidence-3", "3")
+            .css(confidenceButtonStyle())
         ,
-        newText("confidence-4", "4")
-            .cssContainer(confidenceOptionStyle())
+        newButton("confidence-4", "4")
+            .css(confidenceButtonStyle())
         ,
-        newText("confidence-5", "5")
-            .cssContainer(confidenceOptionStyle())
+        newButton("confidence-5", "5")
+            .css(confidenceButtonStyle())
         ,
         newSelector("confidence")
             .add(
-                getText("confidence-1"),
-                getText("confidence-2"),
-                getText("confidence-3"),
-                getText("confidence-4"),
-                getText("confidence-5")
+                getButton("confidence-1"),
+                getButton("confidence-2"),
+                getButton("confidence-3"),
+                getButton("confidence-4"),
+                getButton("confidence-5")
             )
             .keys("1", "2", "3", "4", "5")
             .log()
@@ -251,39 +368,40 @@ function choiceTrial(label, row) {
         newCanvas("confidence-screen", 900, 260)
             .add("center at 50%", 0, getText("confidence-prompt"))
             .add("center at 50%", 44, getText("confidence-hint"))
-            .add(70, 136, getText("confidence-low"))
-            .add(262, 118, getText("confidence-1"))
-            .add(348, 118, getText("confidence-2"))
-            .add(434, 118, getText("confidence-3"))
-            .add(520, 118, getText("confidence-4"))
-            .add(606, 118, getText("confidence-5"))
-            .add(690, 136, getText("confidence-high"))
+            .add(44, 136, getText("confidence-low"))
+            .add(260, 112, getButton("confidence-1"))
+            .add(346, 112, getButton("confidence-2"))
+            .add(432, 112, getButton("confidence-3"))
+            .add(518, 112, getButton("confidence-4"))
+            .add(604, 112, getButton("confidence-5"))
+            .add(716, 136, getText("confidence-high"))
             .print("center at 50vw", "top at 26vh")
         ,
         getSelector("confidence")
             .wait()
         ,
         getSelector("confidence")
-            .test.selected(getText("confidence-1"))
+            .test.selected(getButton("confidence-1"))
             .success(getVar("confidence_response").set("1"))
         ,
         getSelector("confidence")
-            .test.selected(getText("confidence-2"))
+            .test.selected(getButton("confidence-2"))
             .success(getVar("confidence_response").set("2"))
         ,
         getSelector("confidence")
-            .test.selected(getText("confidence-3"))
+            .test.selected(getButton("confidence-3"))
             .success(getVar("confidence_response").set("3"))
         ,
         getSelector("confidence")
-            .test.selected(getText("confidence-4"))
+            .test.selected(getButton("confidence-4"))
             .success(getVar("confidence_response").set("4"))
         ,
         getSelector("confidence")
-            .test.selected(getText("confidence-5"))
+            .test.selected(getButton("confidence-5"))
             .success(getVar("confidence_response").set("5"))
     )
     .log("participant_id", participantId)
+    .log("sequence_label", row.sequence_label)
     .log("trial_type", row.trial_type)
     .log("block", row.block)
     .log("item_id", row.item_id)
@@ -306,7 +424,7 @@ function choiceTrial(label, row) {
     .log("correct_key", row.correct_key);
 }
 
-function confidenceOptionStyle() {
+function confidenceButtonStyle() {
     return {
         "background": "#fff",
         "border": "2px solid #222",
@@ -315,70 +433,8 @@ function confidenceOptionStyle() {
         "font-size": "28px",
         "font-weight": "700",
         "height": "58px",
-        "line-height": "58px",
+        "padding": "0",
         "text-align": "center",
         "width": "58px"
     };
-}
-
-function attentionTrial(label, title) {
-    return newTrial(label,
-        newText("title", title)
-            .cssContainer({ "font-size": "28px", "font-weight": "700", "text-align": "center", "width": "760px" })
-        ,
-        newText("question", "")
-            .text(getVar("lastAttentionQuestion"))
-            .cssContainer({ "font-size": "20px", "font-weight": "600", "text-align": "center", "width": "760px" })
-        ,
-        newText("keys", "Press F for the left option or J for the right option.")
-            .cssContainer({ "font-size": "18px", "line-height": "1.45", "text-align": "center", "width": "720px" })
-        ,
-        newCanvas("attention-screen", 760, 220)
-            .add("center at 50%", 0, getText("title"))
-            .add("center at 50%", 90, getText("question"))
-            .add("center at 50%", 145, getText("keys"))
-            .print("center at 50vw", "top at 24vh")
-        ,
-        newVar("attention_expected_key", "")
-            .set(getVar("lastAttentionKey"))
-            .log("final")
-        ,
-        newVar("attention_previous_item", "")
-            .set(getVar("lastItemId"))
-            .log("final")
-        ,
-        newVar("attention_previous_left_role", "")
-            .set(getVar("lastLeftRole"))
-            .log("final")
-        ,
-        newVar("attention_previous_right_role", "")
-            .set(getVar("lastRightRole"))
-            .log("final")
-        ,
-        newVar("attention_response_key", "")
-            .log("final")
-        ,
-        newVar("attention_correct", "0")
-            .log("final")
-        ,
-        newKey("attention", "FJ")
-            .log("first")
-            .wait()
-        ,
-        getVar("attention_response_key")
-            .set(getKey("attention"))
-        ,
-        getKey("attention")
-            .test.pressed(getVar("lastAttentionKey"))
-            .success(getVar("attention_correct").set("1"))
-            .failure(getVar("attention_correct").set("0"))
-        ,
-        newTimer("attention-pause", 250)
-            .start()
-            .wait()
-    )
-    .log("participant_id", participantId)
-    .log("trial_type", "attention")
-    .log("attention_label", label)
-    .setOption("countsForProgressBar", false);
 }
