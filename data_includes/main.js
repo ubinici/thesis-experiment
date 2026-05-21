@@ -9,18 +9,6 @@ const participantId = GetURLParameter("id") || "NO_ID";
 // For counterbalanced collection later, uncomment this line.
 // GetTable("items.csv").setGroupColumn("group");
 
-Sequence(
-    "init",
-    "instructions",
-    randomize("practice"),
-    randomize("main-block-1"),
-    "attention-1",
-    randomize("main-block-2"),
-    "attention-2",
-    SendResults(),
-    "completion"
-);
-
 newTrial("init",
     newVar("lastAttentionQuestion", "")
         .global()
@@ -487,3 +475,28 @@ function endpointLabelStyle(alignment) {
         "width": "150px"
     };
 }
+
+function primaryButtonStyle() {
+    return {
+        "background": "#235c68",
+        "border": "0",
+        "border-radius": "4px",
+        "color": "#fff",
+        "cursor": "pointer",
+        "font-size": "18px",
+        "font-weight": "700",
+        "padding": "11px 20px"
+    };
+}
+
+Sequence(
+    "init",
+    "instructions",
+    randomize("practice"),
+    randomize("main-block-1"),
+    "attention-1",
+    randomize("main-block-2"),
+    "attention-2",
+    SendResults(),
+    "completion"
+);
