@@ -256,10 +256,11 @@ function choiceTrial(label, row) {
             .size(300, 300)
         ,
         newText("left-key", "F")
-            .cssContainer({
+            .css({
                 "background": "#222",
                 "border-radius": "4px",
                 "color": "#fff",
+                "display": "inline-block",
                 "font-size": "22px",
                 "font-weight": "700",
                 "line-height": "1",
@@ -269,10 +270,11 @@ function choiceTrial(label, row) {
             })
         ,
         newText("right-key", "J")
-            .cssContainer({
+            .css({
                 "background": "#222",
                 "border-radius": "4px",
                 "color": "#fff",
+                "display": "inline-block",
                 "font-size": "22px",
                 "font-weight": "700",
                 "line-height": "1",
