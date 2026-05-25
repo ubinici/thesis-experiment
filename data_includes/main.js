@@ -33,22 +33,16 @@ newTrial("init",
 
 newTrial("instructions",
     newText("title", "Referential prediction experiment")
-        .addClass("stage-title")
     ,
     newText("instructions-1", "On each trial, you will see two objects and hear the beginning of a description, such as \"Click on the yellow...\"")
-        .addClass("stage-paragraph")
     ,
     newText("instructions-2", "Press F to choose the left object or J to choose the right object. Then rate how confident you are in your choice.")
-        .addClass("stage-paragraph")
     ,
     newText("instructions-3", "Some displays may be grayscale. In those cases, answer based on which object you think the speaker is more likely to describe.")
-        .addClass("stage-paragraph")
     ,
     newButton("start", "Start practice")
-        .addClass("primary-btn")
     ,
     newCanvas("instructions-screen", 920, 560)
-        .addClass("experiment-canvas")
         .add("center at 50%", 40, getText("title"))
         .add("center at 50%", 132, getText("instructions-1"))
         .add("center at 50%", 218, getText("instructions-2"))
@@ -83,17 +77,13 @@ Template(
 
 newTrial("attention-1",
     newText("title", "Attention check 1")
-        .addClass("stage-title")
     ,
     newText("question", "")
         .text(getVar("lastAttentionQuestion"))
-        .addClass("stage-question")
     ,
     newText("keys", "Press F for the left option or J for the right option.")
-        .addClass("stage-hint")
     ,
     newCanvas("attention-screen", 920, 560)
-        .addClass("experiment-canvas")
         .add("center at 50%", 40, getText("title"))
         .add("center at 50%", 208, getText("question"))
         .add("center at 50%", 266, getText("keys"))
@@ -144,17 +134,13 @@ newTrial("attention-1",
 
 newTrial("attention-2",
     newText("title", "Attention check 2")
-        .addClass("stage-title")
     ,
     newText("question", "")
         .text(getVar("lastAttentionQuestion"))
-        .addClass("stage-question")
     ,
     newText("keys", "Press F for the left option or J for the right option.")
-        .addClass("stage-hint")
     ,
     newCanvas("attention-screen", 920, 560)
-        .addClass("experiment-canvas")
         .add("center at 50%", 40, getText("title"))
         .add("center at 50%", 208, getText("question"))
         .add("center at 50%", 266, getText("keys"))
@@ -205,13 +191,10 @@ newTrial("attention-2",
 
 newTrial("completion",
     newText("done", "Thank you. Your responses have been recorded.")
-        .addClass("stage-title")
     ,
     newText("close", "You may now close this window.")
-        .addClass("stage-hint")
     ,
     newCanvas("completion-screen", 920, 560)
-        .addClass("experiment-canvas")
         .add("center at 50%", 40, getText("done"))
         .add("center at 50%", 208, getText("close"))
         .print("center at 50vw", "top at 12vh")
@@ -251,24 +234,18 @@ function choiceTrial(label, row) {
             .set(row.right_role)
         ,
         newText("prompt", "Listen to the description and choose the more likely referent.")
-            .addClass("stage-question")
         ,
         newImage("left-image", row.left_image)
             .size(300, 300)
-            .addClass("trial-image")
         ,
         newImage("right-image", row.right_image)
             .size(300, 300)
-            .addClass("trial-image")
         ,
         newText("left-key", "F")
-            .addClass("keycap")
         ,
         newText("right-key", "J")
-            .addClass("keycap")
         ,
         newCanvas("trial-screen", 920, 560)
-            .addClass("experiment-canvas")
             .add("center at 50%", 40, getText("prompt"))
             .add(80, 142, getImage("left-image"))
             .add(540, 142, getImage("right-image"))
@@ -304,34 +281,25 @@ function choiceTrial(label, row) {
         clear()
         ,
         newText("confidence-prompt", "How confident are you in your choice?")
-            .addClass("stage-question")
         ,
         newText("confidence-hint", "Click a number or press the matching key.")
-            .addClass("stage-hint")
         ,
         newText("confidence-low", "Not confident")
-            .addClass("endpoint-label-left")
         ,
         newText("confidence-high", "Very confident")
-            .addClass("endpoint-label-right")
         ,
         newVar("confidence_response", "")
             .log("final")
         ,
         newButton("confidence-1", "1")
-            .addClass("confidence-btn")
         ,
         newButton("confidence-2", "2")
-            .addClass("confidence-btn")
         ,
         newButton("confidence-3", "3")
-            .addClass("confidence-btn")
         ,
         newButton("confidence-4", "4")
-            .addClass("confidence-btn")
         ,
         newButton("confidence-5", "5")
-            .addClass("confidence-btn")
         ,
         newSelector("confidence")
             .add(
@@ -345,7 +313,6 @@ function choiceTrial(label, row) {
             .log()
         ,
         newCanvas("confidence-screen", 920, 560)
-            .addClass("experiment-canvas")
             .add("center at 50%", 40, getText("confidence-prompt"))
             .add("center at 50%", 98, getText("confidence-hint"))
             .add(117, 284, getText("confidence-low"))
