@@ -3,6 +3,28 @@ PennController.ResetPrefix(null);
 // Keep the debugger visible while developing. Uncomment before real data collection.
 // DebugOff();
 
+// Pools for dynamic runtime matching
+const protoObjects = ["banana", "apple", "carrot", "lemon"];
+const genericObjects = ["shirt", "jacket", "sock", "hat"];
+
+// Fisher-Yates shuffle algorithm
+function shuffleArray(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
+
+// Establish dynamic pairing for this participant session
+const shuffledGenerics = shuffleArray([...genericObjects]);
+const pairings = {};
+protoObjects.forEach((proto, index) => {
+    pairings[proto] = shuffledGenerics[index];
+});
+
 var showProgressBar = false;
 const participantId = GetURLParameter("id") || "NO_ID";
 
@@ -221,6 +243,27 @@ newTrial("completion",
 function choiceTrial(label, row) {
     const hasCorrectKey = row.correct_key == "F" || row.correct_key == "J";
 
+    // 1. Determine which column contains the prototypical object
+    const isLeftProto = protoObjects.includes(row.left_object);
+    const protoObj = isLeftProto ? row.left_object : row.right_object;
+    
+    // 2. Fetch the dynamically paired generic object
+    const actualGenericObj = pairings[protoObj] || (isLeftProto ? row.right_object : row.left_object);
+
+    // 3. Resolve the active left and right objects
+    const leftObjVal = isLeftProto ? protoObj : actualGenericObj;
+    const rightObjVal = isLeftProto ? actualGenericObj : protoObj;
+
+    // 4. Construct standardized image filenames: [object]_[color].png
+    const leftImageVal = leftObjVal + "_" + row.left_color + ".png";
+    const rightImageVal = rightObjVal + "_" + row.right_color + ".png";
+
+    // 5. Construct pair-based item ID for logging
+    let itemIdVal = row.item_id;
+    if (row.trial_type == "critical") {
+        itemIdVal = protoObj + "-" + actualGenericObj;
+    }
+
     return newTrial(label,
         newVar("choice_key", "")
             .log("final")
@@ -238,7 +281,7 @@ function choiceTrial(label, row) {
             .set(row.attention_key)
         ,
         getVar("lastItemId")
-            .set(row.item_id)
+            .set(itemIdVal)
         ,
         getVar("lastLeftRole")
             .set(row.left_role)
@@ -249,10 +292,10 @@ function choiceTrial(label, row) {
         newText("prompt", "Listen to the description and choose the more likely referent.")
             .css(stageQuestionStyle())
         ,
-        newImage("left-image", row.left_image)
+        newImage("left-image", leftImageVal)
             .size(300, 300)
         ,
-        newImage("right-image", row.right_image)
+        newImage("right-image", rightImageVal)
             .size(300, 300)
         ,
         newText("left-key", "F")
@@ -397,19 +440,19 @@ function choiceTrial(label, row) {
     .log("participant_id", participantId)
     .log("trial_type", row.trial_type)
     .log("block", row.block)
-    .log("item_id", row.item_id)
+    .log("item_id", itemIdVal)
     .log("condition", row.condition)
     .log("group", row.group)
     .log("typicality", row.typicality)
     .log("visual_availability", row.visual_availability)
     .log("color", row.color)
-    .log("left_object", row.left_object)
-    .log("right_object", row.right_object)
+    .log("left_object", leftObjVal)
+    .log("right_object", rightObjVal)
     .log("left_color", row.left_color)
     .log("right_color", row.right_color)
     .log("audio", row.audio)
-    .log("left_image", row.left_image)
-    .log("right_image", row.right_image)
+    .log("left_image", leftImageVal)
+    .log("right_image", rightImageVal)
     .log("left_role", row.left_role)
     .log("right_role", row.right_role)
     .log("attention_question", row.attention_question)
