@@ -7,6 +7,10 @@ PennController.ResetPrefix(null);
 const protoObjects = ["banana", "apple", "carrot", "lemon"];
 const genericObjects = ["shirt", "jacket", "sock", "hat"];
 
+// Development fallback flag: Set to true to test the experiment using the existing placeholder
+// files in chunk_includes before your custom-generated images are uploaded.
+const usePlaceholders = true;
+
 // Fisher-Yates shuffle algorithm
 function shuffleArray(array) {
     let currentIndex = array.length, randomIndex;
@@ -254,9 +258,28 @@ function choiceTrial(label, row) {
     const leftObjVal = isLeftProto ? protoObj : actualGenericObj;
     const rightObjVal = isLeftProto ? actualGenericObj : protoObj;
 
-    // 4. Construct standardized image filenames: [object]_[color].png
-    const leftImageVal = leftObjVal + "_" + row.left_color + ".png";
-    const rightImageVal = rightObjVal + "_" + row.right_color + ".png";
+    // 4. Construct image filenames (using placeholders if in development mode)
+    let leftImageVal, rightImageVal;
+    if (usePlaceholders) {
+        if (row.trial_type == "filler") {
+            leftImageVal = "placeholder_filler_left.png";
+            rightImageVal = "placeholder_filler_right.png";
+        } else {
+            const leftRole = isLeftProto ? "color_associated" : "color_variable";
+            const rightRole = isLeftProto ? "color_variable" : "color_associated";
+
+            leftImageVal = (leftRole === "color_associated") 
+                ? (row.left_color === "gray" ? "placeholder_color_associated_gray.png" : "placeholder_color_associated_visible.png")
+                : (row.left_color === "gray" ? "placeholder_color_variable_gray.png" : "placeholder_color_variable_visible.png");
+
+            rightImageVal = (rightRole === "color_associated") 
+                ? (row.right_color === "gray" ? "placeholder_color_associated_gray.png" : "placeholder_color_associated_visible.png")
+                : (row.right_color === "gray" ? "placeholder_color_variable_gray.png" : "placeholder_color_variable_visible.png");
+        }
+    } else {
+        leftImageVal = leftObjVal + "_" + row.left_color + ".png";
+        rightImageVal = rightObjVal + "_" + row.right_color + ".png";
+    }
 
     // 5. Construct pair-based item ID for logging
     let itemIdVal = row.item_id;
