@@ -3,31 +3,9 @@ PennController.ResetPrefix(null);
 // Keep the debugger visible while developing. Uncomment before real data collection.
 // DebugOff();
 
-// Pools for dynamic runtime matching
-const protoObjects = ["banana", "apple", "carrot", "lemon"];
-const genericObjects = ["shirt", "jacket", "sock", "hat"];
-
-// Development fallback flag: Set to true to test the experiment using the existing placeholder
-// files in chunk_includes before your custom-generated images are uploaded.
+// Development fallback flag: Set to true to test using the placeholders in chunk_includes 
+// for grayscale trials while you are still working on adding the new gray/filler images.
 const usePlaceholders = true;
-
-// Fisher-Yates shuffle algorithm
-function shuffleArray(array) {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex != 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-    }
-    return array;
-}
-
-// Establish dynamic pairing for this participant session
-const shuffledGenerics = shuffleArray([...genericObjects]);
-const pairings = {};
-protoObjects.forEach((proto, index) => {
-    pairings[proto] = shuffledGenerics[index];
-});
 
 var showProgressBar = false;
 const participantId = GetURLParameter("id") || "NO_ID";
@@ -247,44 +225,22 @@ newTrial("completion",
 function choiceTrial(label, row) {
     const hasCorrectKey = row.correct_key == "F" || row.correct_key == "J";
 
-    // 1. Determine which column contains the prototypical object
-    const isLeftProto = protoObjects.includes(row.left_object);
-    const protoObj = isLeftProto ? row.left_object : row.right_object;
-    
-    // 2. Fetch the dynamically paired generic object
-    const actualGenericObj = pairings[protoObj] || (isLeftProto ? row.right_object : row.left_object);
+    // Standardize file path retrieval directly from row.left_image / row.right_image
+    let leftImageVal = row.left_image;
+    let rightImageVal = row.right_image;
 
-    // 3. Resolve the active left and right objects
-    const leftObjVal = isLeftProto ? protoObj : actualGenericObj;
-    const rightObjVal = isLeftProto ? actualGenericObj : protoObj;
-
-    // 4. Construct image filenames (using placeholders if in development mode)
-    let leftImageVal, rightImageVal;
+    // Proactive development fallback for missing grayscale versions
     if (usePlaceholders) {
-        if (row.trial_type == "filler") {
-            leftImageVal = "placeholder_filler_left.png";
-            rightImageVal = "placeholder_filler_right.png";
-        } else {
-            const leftRole = isLeftProto ? "color_associated" : "color_variable";
-            const rightRole = isLeftProto ? "color_variable" : "color_associated";
-
-            leftImageVal = (leftRole === "color_associated") 
-                ? (row.left_color === "gray" ? "placeholder_color_associated_gray.png" : "placeholder_color_associated_visible.png")
-                : (row.left_color === "gray" ? "placeholder_color_variable_gray.png" : "placeholder_color_variable_visible.png");
-
-            rightImageVal = (rightRole === "color_associated") 
-                ? (row.right_color === "gray" ? "placeholder_color_associated_gray.png" : "placeholder_color_associated_visible.png")
-                : (row.right_color === "gray" ? "placeholder_color_variable_gray.png" : "placeholder_color_variable_visible.png");
+        if (leftImageVal.includes("gray_")) {
+            leftImageVal = (row.left_role == "color_associated") 
+                ? "placeholder_color_associated_gray.png" 
+                : "placeholder_color_variable_gray.png";
         }
-    } else {
-        leftImageVal = leftObjVal + "_" + row.left_color + ".png";
-        rightImageVal = rightObjVal + "_" + row.right_color + ".png";
-    }
-
-    // 5. Construct pair-based item ID for logging
-    let itemIdVal = row.item_id;
-    if (row.trial_type == "critical") {
-        itemIdVal = protoObj + "-" + actualGenericObj;
+        if (rightImageVal.includes("gray_")) {
+            rightImageVal = (row.right_role == "color_associated") 
+                ? "placeholder_color_associated_gray.png" 
+                : "placeholder_color_variable_gray.png";
+        }
     }
 
     return newTrial(label,
@@ -304,7 +260,7 @@ function choiceTrial(label, row) {
             .set(row.attention_key)
         ,
         getVar("lastItemId")
-            .set(itemIdVal)
+            .set(row.item_id)
         ,
         getVar("lastLeftRole")
             .set(row.left_role)
@@ -463,14 +419,14 @@ function choiceTrial(label, row) {
     .log("participant_id", participantId)
     .log("trial_type", row.trial_type)
     .log("block", row.block)
-    .log("item_id", itemIdVal)
+    .log("item_id", row.item_id)
     .log("condition", row.condition)
     .log("group", row.group)
     .log("typicality", row.typicality)
     .log("visual_availability", row.visual_availability)
     .log("color", row.color)
-    .log("left_object", leftObjVal)
-    .log("right_object", rightObjVal)
+    .log("left_object", row.left_object)
+    .log("right_object", row.right_object)
     .log("left_color", row.left_color)
     .log("right_color", row.right_color)
     .log("audio", row.audio)
