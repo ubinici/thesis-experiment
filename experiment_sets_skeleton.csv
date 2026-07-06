@@ -1,0 +1,8 @@
+trial_type,sequence_label,block,item_id,condition,group,left_object_id,right_object_id,left_role,right_role,audio,attention_question,attention_key,correct_key
+critical,main-block-1,1,item_1,cond_1,A,obj_01,obj_04,color_associated,color_variable,cue_yellow.wav,Which option was the banana?,F,
+critical,main-block-1,1,item_1,cond_2,B,obj_02,obj_05,color_associated,color_variable,cue_green.wav,Which option was the banana?,F,
+critical,main-block-1,1,item_1,cond_3,C,obj_03,obj_06,color_associated,color_variable,cue_yellow.wav,Which option was the banana?,F,
+critical,main-block-1,1,item_1,cond_4,D,obj_01,obj_04,color_associated,color_variable,cue_yellow.wav,Which option was the banana?,F,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,

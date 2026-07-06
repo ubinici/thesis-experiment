@@ -1,0 +1,10 @@
+object_id,object_name,color,typicality,image_path,role
+obj_01,banana,yellow,typical,objects/yellow_banana.png,color_associated
+obj_02,banana,green,atypical,objects/green_banana.png,color_associated
+obj_03,banana,gray,none,objects/gray_banana.png,color_associated
+obj_04,shirt,yellow,none,objects/yellow_shirt.png,color_variable
+obj_05,shirt,green,none,objects/green_shirt.png,color_variable
+obj_06,shirt,gray,none,objects/gray_shirt.png,color_variable
+,,,,,
+,,,,,
+,,,,,

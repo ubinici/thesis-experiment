@@ -6,7 +6,7 @@ This repository is a PCIbex-ready scaffold for the referential prediction experi
 
 - `data_includes/main.js`: main PennController/PCIbex experiment script.
 - `chunk_includes/items.csv`: practice, critical, and filler rows.
-- `chunk_includes/`: placeholder image and audio resources.
+- `chunk_includes/`: image and audio resources.
 - `css_includes/PennController.css`: basic experiment styling.
 
 PCIbex GitHub sync maps these root folders into the Farm project folders:
@@ -18,12 +18,12 @@ PCIbex GitHub sync maps these root folders into the Farm project folders:
 
 ## Current Trial Design
 
-The default run contains:
+The default run now follows `List 1` from `Thesis Experiment Set .xlsx`:
 
 - 1 practice trial
-- 16 critical trials: 4 item sets x 4 conditions
+- 16 critical trials
 - 4 filler trials
-- 2 attention checks, inserted after 10 and 20 main trials
+- 4 attention checks, inserted at the workbook list positions
 
 Main trials show two objects, play an English truncated audio cue such as "Click on the yellow...", collect an `F`/`J` choice, and then collect a 1-5 confidence rating.
 
@@ -36,13 +36,13 @@ Critical trials instantiate the four core conditions:
 
 For critical trials, both objects share the named color in visible displays, and both objects are gray in grayscale displays. Fillers use different object colors.
 
-Attention checks are text-only. They ask a row-specific question about the immediately preceding trial, such as "Which option was the banana?", and score the answer against `attention_key`.
+Attention checks are text-only. They ask a row-specific question about the immediately preceding trial, such as "Which one was a living object?", and score the answer against `attention_key`.
 
 The development template does not run a full-block `CheckPreloaded` gate, because that can make testing painfully slow and can mask missing-resource errors as a long loading wait. PCIbex will still load resources as trials run. Add a preload check back only once final assets are small, uploaded, and stable.
 
 ## Editing Stimuli
 
-Replace placeholder filenames in `chunk_includes/items.csv` as final stimuli become available. The important columns are:
+The workbook image paths are wired through `chunk_includes/items.csv`. Full-color assets live in `chunk_includes/objects/full_color/`, and grayscale assets live in `chunk_includes/objects/grayscale/`. The important columns are:
 
 - `audio`: cue audio filename in `chunk_includes`
 - `left_object`, `right_object`: object names shown on each side
@@ -52,11 +52,21 @@ Replace placeholder filenames in `chunk_includes/items.csv` as final stimuli bec
 - `attention_question`: text-only attention check question to use if this is the trial immediately before a check
 - `attention_key`: correct `F`/`J` answer for that attention check
 
-The `group` column is present for later counterbalancing. By default, the experiment runs all rows for testing. To enable PCIbex group/list filtering later, uncomment this line in `data_includes/main.js`:
+The current table uses group `A` for the installed `List 1` rows so PCIbex group filtering keeps the whole list together. If you later add Lists 2-4, update the `group` values and provide the matching image resources before collecting data.
 
 ```javascript
 GetTable("items.csv").setGroupColumn("group");
 ```
+
+## Compressing Images
+
+Run this from the repository root after adding or replacing PNG stimuli:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\compress-images.ps1
+```
+
+The script resizes PNG stimuli under `chunk_includes/objects/` to a maximum of 600 x 600 pixels and keeps them under 1 MB while preserving the existing filenames used by `items.csv`.
 
 ## PCIbex Sync
 

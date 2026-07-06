@@ -3,15 +3,11 @@ PennController.ResetPrefix(null);
 // Keep the debugger visible while developing. Uncomment before real data collection.
 // DebugOff();
 
-// Development fallback flag: Set to true to test using the placeholders in chunk_includes 
-// for grayscale trials while you are still working on adding the new gray/filler images.
-const usePlaceholders = true;
-
 var showProgressBar = false;
 const participantId = GetURLParameter("id") || "NO_ID";
 
 // For counterbalanced collection later, uncomment this line.
-// GetTable("items.csv").setGroupColumn("group");
+GetTable("items.csv").setGroupColumn("group");
 
 newTrial("init",
     newVar("lastAttentionQuestion", "")
@@ -70,139 +66,19 @@ Template(
     row => choiceTrial("practice", row)
 );
 
-Template(
-    GetTable("items.csv")
-        .filter(row => row.block == "1")
-        .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
-    row => choiceTrial("main-block-1", row)
+["1", "2", "3", "4", "5"].forEach(blockNumber =>
+    Template(
+        GetTable("items.csv")
+            .filter(row => row.block == blockNumber)
+            .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
+        row => choiceTrial("main-block-" + blockNumber, row)
+    )
 );
 
-Template(
-    GetTable("items.csv")
-        .filter(row => row.block == "2")
-        .filter(row => row.trial_type == "critical" || row.trial_type == "filler"),
-    row => choiceTrial("main-block-2", row)
-);
-
-newTrial("attention-1",
-    newText("title", "Attention check 1")
-        .css(stageTitleStyle())
-    ,
-    newText("question", "")
-        .text(getVar("lastAttentionQuestion"))
-        .css(stageQuestionStyle())
-    ,
-    newText("keys", "Press F for the left option or J for the right option.")
-        .css(stageHintStyle())
-    ,
-    newCanvas("attention-screen", 920, 560)
-        .add("center at 50%", 0, getText("title"))
-        .add("center at 50%", 168, getText("question"))
-        .add("center at 50%", 226, getText("keys"))
-        .print("center at 50vw", "top at 12vh")
-    ,
-    newVar("attention_expected_key", "")
-        .set(getVar("lastAttentionKey"))
-        .log("final")
-    ,
-    newVar("attention_previous_item", "")
-        .set(getVar("lastItemId"))
-        .log("final")
-    ,
-    newVar("attention_previous_left_role", "")
-        .set(getVar("lastLeftRole"))
-        .log("final")
-    ,
-    newVar("attention_previous_right_role", "")
-        .set(getVar("lastRightRole"))
-        .log("final")
-    ,
-    newVar("attention_response_key", "")
-        .log("final")
-    ,
-    newVar("attention_correct", "0")
-        .log("final")
-    ,
-    newKey("attention", "FJ")
-        .log("first")
-        .wait()
-    ,
-    getVar("attention_response_key")
-        .set(getKey("attention"))
-    ,
-    getKey("attention")
-        .test.pressed(getVar("lastAttentionKey"))
-        .success(getVar("attention_correct").set("1"))
-        .failure(getVar("attention_correct").set("0"))
-    ,
-    newTimer("attention-pause", 250)
-        .start()
-        .wait()
-)
-.log("participant_id", participantId)
-.log("trial_type", "attention")
-.log("attention_label", "attention-1")
-.setOption("countsForProgressBar", false);
-
-newTrial("attention-2",
-    newText("title", "Attention check 2")
-        .css(stageTitleStyle())
-    ,
-    newText("question", "")
-        .text(getVar("lastAttentionQuestion"))
-        .css(stageQuestionStyle())
-    ,
-    newText("keys", "Press F for the left option or J for the right option.")
-        .css(stageHintStyle())
-    ,
-    newCanvas("attention-screen", 920, 560)
-        .add("center at 50%", 0, getText("title"))
-        .add("center at 50%", 168, getText("question"))
-        .add("center at 50%", 226, getText("keys"))
-        .print("center at 50vw", "top at 12vh")
-    ,
-    newVar("attention_expected_key", "")
-        .set(getVar("lastAttentionKey"))
-        .log("final")
-    ,
-    newVar("attention_previous_item", "")
-        .set(getVar("lastItemId"))
-        .log("final")
-    ,
-    newVar("attention_previous_left_role", "")
-        .set(getVar("lastLeftRole"))
-        .log("final")
-    ,
-    newVar("attention_previous_right_role", "")
-        .set(getVar("lastRightRole"))
-        .log("final")
-    ,
-    newVar("attention_response_key", "")
-        .log("final")
-    ,
-    newVar("attention_correct", "0")
-        .log("final")
-    ,
-    newKey("attention", "FJ")
-        .log("first")
-        .wait()
-    ,
-    getVar("attention_response_key")
-        .set(getKey("attention"))
-    ,
-    getKey("attention")
-        .test.pressed(getVar("lastAttentionKey"))
-        .success(getVar("attention_correct").set("1"))
-        .failure(getVar("attention_correct").set("0"))
-    ,
-    newTimer("attention-pause", 250)
-        .start()
-        .wait()
-)
-.log("participant_id", participantId)
-.log("trial_type", "attention")
-.log("attention_label", "attention-2")
-.setOption("countsForProgressBar", false);
+attentionTrial("attention-1");
+attentionTrial("attention-2");
+attentionTrial("attention-3");
+attentionTrial("attention-4");
 
 newTrial("completion",
     newText("done", "Thank you. Your responses have been recorded.")
@@ -225,23 +101,8 @@ newTrial("completion",
 function choiceTrial(label, row) {
     const hasCorrectKey = row.correct_key == "F" || row.correct_key == "J";
 
-    // Standardize file path retrieval directly from row.left_image / row.right_image
-    let leftImageVal = row.left_image;
-    let rightImageVal = row.right_image;
-
-    // Proactive development fallback for missing grayscale versions
-    if (usePlaceholders) {
-        if (leftImageVal.includes("gray_")) {
-            leftImageVal = (row.left_role == "color_associated") 
-                ? "placeholder_color_associated_gray.png" 
-                : "placeholder_color_variable_gray.png";
-        }
-        if (rightImageVal.includes("gray_")) {
-            rightImageVal = (row.right_role == "color_associated") 
-                ? "placeholder_color_associated_gray.png" 
-                : "placeholder_color_variable_gray.png";
-        }
-    }
+    const leftImageVal = row.left_image;
+    const rightImageVal = row.right_image;
 
     return newTrial(label,
         newVar("choice_key", "")
@@ -439,6 +300,70 @@ function choiceTrial(label, row) {
     .log("correct_key", row.correct_key);
 }
 
+function attentionTrial(label) {
+    const attentionNumber = label.replace("attention-", "");
+
+    return newTrial(label,
+        newText("title", "Attention check " + attentionNumber)
+            .css(stageTitleStyle())
+        ,
+        newText("question", "")
+            .text(getVar("lastAttentionQuestion"))
+            .css(stageQuestionStyle())
+        ,
+        newText("keys", "Press F for the left option or J for the right option.")
+            .css(stageHintStyle())
+        ,
+        newCanvas("attention-screen", 920, 560)
+            .add("center at 50%", 0, getText("title"))
+            .add("center at 50%", 168, getText("question"))
+            .add("center at 50%", 226, getText("keys"))
+            .print("center at 50vw", "top at 12vh")
+        ,
+        newVar("attention_expected_key", "")
+            .set(getVar("lastAttentionKey"))
+            .log("final")
+        ,
+        newVar("attention_previous_item", "")
+            .set(getVar("lastItemId"))
+            .log("final")
+        ,
+        newVar("attention_previous_left_role", "")
+            .set(getVar("lastLeftRole"))
+            .log("final")
+        ,
+        newVar("attention_previous_right_role", "")
+            .set(getVar("lastRightRole"))
+            .log("final")
+        ,
+        newVar("attention_response_key", "")
+            .log("final")
+        ,
+        newVar("attention_correct", "0")
+            .log("final")
+        ,
+        newKey("attention", "FJ")
+            .log("first")
+            .wait()
+        ,
+        getVar("attention_response_key")
+            .set(getKey("attention"))
+        ,
+        getKey("attention")
+            .test.pressed(getVar("lastAttentionKey"))
+            .success(getVar("attention_correct").set("1"))
+            .failure(getVar("attention_correct").set("0"))
+        ,
+        newTimer("attention-pause", 250)
+            .start()
+            .wait()
+    )
+    .log("participant_id", participantId)
+    .log("trial_type", "attention")
+    .log("attention_label", label)
+    .setOption("countsForProgressBar", false);
+}
+
 function confidenceButtonStyle() {
     return {
         "background": "#fff",
@@ -519,11 +444,16 @@ function primaryButtonStyle() {
 Sequence(
     "init",
     "instructions",
-    randomize("practice"),
-    randomize("main-block-1"),
+    "practice",
+    "main-block-1",
     "attention-1",
-    randomize("main-block-2"),
+    "main-block-2",
     "attention-2",
+    "main-block-3",
+    "attention-3",
+    "main-block-4",
+    "attention-4",
+    "main-block-5",
     SendResults(),
     "completion"
 );
