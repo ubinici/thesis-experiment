@@ -115,6 +115,11 @@ function choiceTrial(label, row) {
         newVar("choice_correct", hasCorrectKey ? "0" : "NA")
             .log("final")
         ,
+        newVar("choice_start_time_ms", 0)
+        ,
+        newVar("choice_rt_ms", "")
+            .log("final")
+        ,
         getVar("lastAttentionQuestion")
             .set(row.attention_question)
         ,
@@ -176,6 +181,9 @@ function choiceTrial(label, row) {
             .print("center at 50vw", "top at 12vh")
             .log()
         ,
+        getVar("choice_start_time_ms")
+            .set(v => Date.now())
+        ,
         newAudio("cue", row.audio)
             .log()
             .play()
@@ -183,6 +191,10 @@ function choiceTrial(label, row) {
         newKey("choice", "FJ")
             .log("first")
             .wait()
+        ,
+        getVar("choice_rt_ms")
+            .set(getVar("choice_start_time_ms"))
+            .set(v => Date.now() - v)
         ,
         getVar("choice_key")
             .set(getKey("choice"))
@@ -215,6 +227,11 @@ function choiceTrial(label, row) {
             .css(endpointLabelStyle("left"))
         ,
         newVar("confidence_response", "")
+            .log("final")
+        ,
+        newVar("confidence_start_time_ms", 0)
+        ,
+        newVar("confidence_rt_ms", "")
             .log("final")
         ,
         newButton("confidence-1", "1")
@@ -255,8 +272,15 @@ function choiceTrial(label, row) {
             .add(673, 244, getText("confidence-high"))
             .print("center at 50vw", "top at 12vh")
         ,
+        getVar("confidence_start_time_ms")
+            .set(v => Date.now())
+        ,
         getSelector("confidence")
             .wait()
+        ,
+        getVar("confidence_rt_ms")
+            .set(getVar("confidence_start_time_ms"))
+            .set(v => Date.now() - v)
         ,
         getSelector("confidence")
             .test.selected(getButton("confidence-1"))
@@ -351,9 +375,21 @@ function attentionTrial(label) {
         newVar("attention_correct", "0")
             .log("final")
         ,
+        newVar("attention_start_time_ms", 0)
+        ,
+        newVar("attention_rt_ms", "")
+            .log("final")
+        ,
+        getVar("attention_start_time_ms")
+            .set(v => Date.now())
+        ,
         newKey("attention", "FJ")
             .log("first")
             .wait()
+        ,
+        getVar("attention_rt_ms")
+            .set(getVar("attention_start_time_ms"))
+            .set(v => Date.now() - v)
         ,
         getVar("attention_response_key")
             .set(getKey("attention"))

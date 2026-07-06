@@ -39,6 +39,12 @@ For critical trials, both objects share the named color in visible displays, and
 
 Attention checks are text-only. They ask a row-specific question about the immediately preceding trial, such as "Which one was a living object?", and score the answer against `attention_key`.
 
+The results include explicit reaction-time columns in milliseconds:
+
+- `choice_rt_ms`: time from the object display/audio cue onset to the `F`/`J` choice.
+- `confidence_rt_ms`: time from the confidence screen appearing to the confidence response.
+- `attention_rt_ms`: time from the attention-check screen appearing to the `F`/`J` response.
+
 The development template does not run a full-block `CheckPreloaded` gate, because that can make testing painfully slow and can mask missing-resource errors as a long loading wait. PCIbex will still load resources as trials run. Add a preload check back only once final assets are small, uploaded, and stable.
 
 ## Editing Stimuli
