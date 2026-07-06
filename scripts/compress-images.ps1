@@ -1,5 +1,5 @@
 param(
-    [string]$Root = "chunk_includes\objects",
+    [string]$Root = "github_assets\objects",
     [int]$MaxDimension = 600,
     [int]$TargetBytes = 1000000,
     [int]$MinDimension = 300,

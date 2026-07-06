@@ -5,6 +5,7 @@ PennController.ResetPrefix(null);
 
 var showProgressBar = false;
 const participantId = GetURLParameter("id") || "NO_ID";
+const imageBaseUrl = "https://raw.githubusercontent.com/ubinici/thesis-experiment/main/github_assets/";
 
 // For counterbalanced collection later, uncomment this line.
 GetTable("items.csv").setGroupColumn("group");
@@ -101,8 +102,8 @@ newTrial("completion",
 function choiceTrial(label, row) {
     const hasCorrectKey = row.correct_key == "F" || row.correct_key == "J";
 
-    const leftImageVal = row.left_image;
-    const rightImageVal = row.right_image;
+    const leftImageVal = githubImageUrl(row.left_image);
+    const rightImageVal = githubImageUrl(row.right_image);
 
     return newTrial(label,
         newVar("choice_key", "")
@@ -298,6 +299,14 @@ function choiceTrial(label, row) {
     .log("attention_question", row.attention_question)
     .log("attention_key", row.attention_key)
     .log("correct_key", row.correct_key);
+}
+
+function githubImageUrl(imagePath) {
+    if (/^https?:\/\//.test(imagePath)) {
+        return imagePath;
+    }
+
+    return imageBaseUrl + imagePath.split("/").map(encodeURIComponent).join("/");
 }
 
 function attentionTrial(label) {
