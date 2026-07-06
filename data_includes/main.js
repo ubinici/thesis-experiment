@@ -5,7 +5,7 @@ PennController.ResetPrefix(null);
 
 var showProgressBar = false;
 const participantId = GetURLParameter("id") || "NO_ID";
-const imageBaseUrl = "https://raw.githubusercontent.com/ubinici/thesis-experiment/main/github_assets/";
+const imageBaseUrl = "https://cdn.jsdelivr.net/gh/ubinici/thesis-experiment@main/github_assets/";
 
 // For counterbalanced collection later, uncomment this line.
 GetTable("items.csv").setGroupColumn("group");

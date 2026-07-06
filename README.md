@@ -7,7 +7,7 @@ This repository is a PCIbex-ready scaffold for the referential prediction experi
 - `data_includes/main.js`: main PennController/PCIbex experiment script.
 - `chunk_includes/items.csv`: practice, critical, and filler rows.
 - `chunk_includes/`: table and audio resources loaded by PCIbex.
-- `github_assets/`: image stimuli hosted through GitHub Raw URLs.
+- `github_assets/`: image stimuli hosted through jsDelivr/GitHub URLs.
 - `css_includes/PennController.css`: basic experiment styling.
 
 PCIbex GitHub sync maps these root folders into the Farm project folders:
@@ -43,12 +43,12 @@ The development template does not run a full-block `CheckPreloaded` gate, becaus
 
 ## Editing Stimuli
 
-The workbook image paths are wired through `chunk_includes/items.csv`. Image filenames stay as relative paths such as `objects/full_color/blue_cup.png`, and `data_includes/main.js` expands them to GitHub Raw URLs under `github_assets/` using `imageBaseUrl`. The important columns are:
+The workbook image paths are wired through `chunk_includes/items.csv`. Image filenames stay as relative paths such as `objects/full_color/blue_cup.jpg`, and `data_includes/main.js` expands them to jsDelivr URLs under `github_assets/` using `imageBaseUrl`. The important columns are:
 
 - `audio`: cue audio filename in `chunk_includes`
 - `left_object`, `right_object`: object names shown on each side
 - `left_color`, `right_color`: visible object colors, with `gray` for grayscale displays
-- `left_image`, `right_image`: image filenames in `chunk_includes`
+- `left_image`, `right_image`: image filenames under `github_assets`
 - `left_role`, `right_role`: labels used in the results file
 - `attention_question`: text-only attention check question to use if this is the trial immediately before a check
 - `attention_key`: correct `F`/`J` answer for that attention check
@@ -59,17 +59,17 @@ The current table uses group `A` for the installed `List 1` rows so PCIbex group
 GetTable("items.csv").setGroupColumn("group");
 ```
 
-For PCIbex, images do not need to be uploaded as PCIbex resources when they are loaded from GitHub. Keep image files outside PCIbex include folders, as in `github_assets/objects/`, or host them in a separate GitHub repository/branch and update `imageBaseUrl` in `data_includes/main.js`.
+For PCIbex, images do not need to be uploaded as PCIbex resources when they are loaded from jsDelivr/GitHub. Keep image files outside PCIbex include folders, as in `github_assets/objects/`, or host them in a separate GitHub repository/branch and update `imageBaseUrl` in `data_includes/main.js`.
 
 ## Compressing Images
 
-Run this from the repository root after adding or replacing PNG stimuli:
+Run this from the repository root after adding or replacing image stimuli:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\compress-images.ps1
 ```
 
-The script resizes PNG stimuli under `github_assets/objects/` to a maximum of 600 x 600 pixels and keeps them under 1 MB while preserving the existing filenames used by `items.csv`.
+The script converts PNG/JPG stimuli under `github_assets/objects/` to high-quality JPG, resizes them to a maximum of 600 x 600 pixels, and keeps them under 1 MB. The filenames in `items.csv` should use `.jpg`.
 
 ## PCIbex Sync
 
