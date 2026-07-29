@@ -1,0 +1,8 @@
+recording_order,color,final_filename,spoken_script,practice_rows,critical_rows,filler_rows,total_rows_across_four_lists,current_wav_status
+1,blue,cue_blue.wav,"Click on the blue...",0,6,4,10,draft_file_present
+2,green,cue_green.wav,"Click on the green...",0,10,4,14,draft_file_present
+3,orange,cue_orange.wav,"Click on the orange...",0,8,0,8,draft_file_present
+4,pink,cue_pink.wav,"Click on the pink...",0,8,4,12,draft_file_present
+5,purple,cue_purple.wav,"Click on the purple...",0,10,4,14,draft_file_present
+6,red,cue_red.wav,"Click on the red...",0,8,0,8,draft_file_present
+7,yellow,cue_yellow.wav,"Click on the yellow...",4,14,0,18,draft_file_present

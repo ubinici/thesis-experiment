@@ -19,12 +19,19 @@ PCIbex GitHub sync maps these root folders into the Farm project folders:
 
 ## Current Trial Design
 
-The default run now follows `List 1` from `Thesis Experiment Set .xlsx`:
+The default run is counterbalanced across the four workbook lists in `Thesis Experiment Set .xlsx`:
 
 - 1 practice trial
 - 16 critical trials
 - 4 filler trials
 - 4 attention checks, inserted at the workbook list positions
+
+The `group` column maps workbook lists to PCIbex groups:
+
+- `A`: List 1
+- `B`: List 2
+- `C`: List 3
+- `D`: List 4
 
 Main trials show two objects, play an English truncated audio cue such as "Click on the yellow...", collect an `F`/`J` choice, and then collect a 1-5 confidence rating.
 
@@ -59,13 +66,15 @@ The workbook image paths are wired through `chunk_includes/items.csv`. Image fil
 - `attention_question`: text-only attention check question to use if this is the trial immediately before a check
 - `attention_key`: correct `F`/`J` answer for that attention check
 
-The current table uses group `A` for the installed `List 1` rows so PCIbex group filtering keeps the whole list together. If you later add Lists 2-4, update the `group` values and provide the matching image resources before collecting data.
+The current table includes groups `A` through `D`. PCIbex rotates participants across those groups using its internal counter when this line is active:
 
 ```javascript
 GetTable("items.csv").setGroupColumn("group");
 ```
 
-For PCIbex, images do not need to be uploaded as PCIbex resources when they are loaded from jsDelivr/GitHub. Keep image files outside PCIbex include folders, as in `github_assets/objects/`, or host them in a separate GitHub repository/branch and update `imageBaseUrl` in `data_includes/main.js`.
+Participant IDs are read from the URL parameters `id`, `PROLIFIC_PID`, `participant`, or `workerId`. If none is present, the script generates and logs an anonymous browser-local ID.
+
+For PCIbex, images do not need to be uploaded as PCIbex resources when they are loaded from jsDelivr/GitHub. Keep image files outside PCIbex include folders, as in `github_assets/objects/`, or host them in a separate GitHub repository/branch and update `imageBaseUrl` in `data_includes/main.js`. The file `github_assets/missing_assets_for_all_lists.csv` lists image paths that are referenced by the four-list table but not currently present locally.
 
 ## Compressing Images
 

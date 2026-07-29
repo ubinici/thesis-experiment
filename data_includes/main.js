@@ -4,7 +4,7 @@ PennController.ResetPrefix(null);
 // DebugOff();
 
 var showProgressBar = false;
-const participantId = GetURLParameter("id") || "NO_ID";
+const participantId = getParticipantId();
 const imageBaseUrl = "https://cdn.jsdelivr.net/gh/ubinici/thesis-experiment@main/github_assets/";
 
 // For counterbalanced collection later, uncomment this line.
@@ -24,6 +24,12 @@ newTrial("init",
         .global()
     ,
     newVar("lastRightRole", "")
+        .global()
+    ,
+    newVar("lastGroup", "")
+        .global()
+    ,
+    newVar("lastListId", "")
         .global()
     ,
     newTimer("init-pause", 1)
@@ -134,6 +140,12 @@ function choiceTrial(label, row) {
         ,
         getVar("lastRightRole")
             .set(row.right_role)
+        ,
+        getVar("lastGroup")
+            .set(row.group)
+        ,
+        getVar("lastListId")
+            .set(row.list_id)
         ,
         newText("prompt", "Listen to the description and choose the more likely referent.")
             .css(stageQuestionStyle())
@@ -308,6 +320,7 @@ function choiceTrial(label, row) {
     .log("item_id", row.item_id)
     .log("condition", row.condition)
     .log("group", row.group)
+    .log("list_id", row.list_id)
     .log("typicality", row.typicality)
     .log("visual_availability", row.visual_availability)
     .log("color", row.color)
@@ -331,6 +344,33 @@ function githubImageUrl(imagePath) {
     }
 
     return imageBaseUrl + imagePath.split("/").map(encodeURIComponent).join("/");
+}
+
+function getParticipantId() {
+    const urlId =
+        GetURLParameter("id") ||
+        GetURLParameter("PROLIFIC_PID") ||
+        GetURLParameter("participant") ||
+        GetURLParameter("workerId");
+
+    if (urlId) {
+        return urlId;
+    }
+
+    const storageKey = "thesis_experiment_participant_id";
+    try {
+        const existingId = window.localStorage.getItem(storageKey);
+        if (existingId) {
+            return existingId;
+        }
+
+        const generatedId = "anon_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
+        window.localStorage.setItem(storageKey, generatedId);
+        return generatedId;
+    }
+    catch (error) {
+        return "anon_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
+    }
 }
 
 function attentionTrial(label) {
@@ -367,6 +407,14 @@ function attentionTrial(label) {
         ,
         newVar("attention_previous_right_role", "")
             .set(getVar("lastRightRole"))
+            .log("final")
+        ,
+        newVar("attention_previous_group", "")
+            .set(getVar("lastGroup"))
+            .log("final")
+        ,
+        newVar("attention_previous_list_id", "")
+            .set(getVar("lastListId"))
             .log("final")
         ,
         newVar("attention_response_key", "")
