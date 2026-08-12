@@ -1,0 +1,8 @@
+color,output_file,source_start_s,nominal_adjective_offset_s,actual_zero_crossing_end_s,duration_ms,sample_rate_hz,channels,subtype,peak_dbfs,rms_dbfs,boundary_note
+yellow,cue_yellow.wav,6.530000,7.590000,7.589909,1059.909,44100,1,PCM_16,-8.860,-24.543,clear /s/ onset
+red,cue_red.wav,23.100000,23.866000,23.866009,766.009,44100,1,PCM_16,-11.193,-25.135,clear /s/ onset
+blue,cue_blue.wav,38.790000,39.660000,39.659819,869.819,44100,1,PCM_16,-11.349,-25.612,clear /s/ onset
+green,cue_green.wav,55.300000,56.125000,56.124558,824.558,44100,1,PCM_16,-10.439,-25.003,clear /s/ onset
+orange,cue_orange.wav,71.320000,72.335000,72.334966,1014.966,44100,1,PCM_16,-10.570,-25.985,estimated /dzh/ to /s/ spectral transition
+purple,cue_purple.wav,87.550000,88.312000,88.311043,761.043,44100,1,PCM_16,-9.304,-24.741,clear /s/ onset
+pink,cue_pink.wav,103.540000,104.323000,104.322766,782.766,44100,1,PCM_16,-7.395,-24.511,clear /s/ onset

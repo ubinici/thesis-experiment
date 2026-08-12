@@ -6,9 +6,15 @@ PennController.ResetPrefix(null);
 var showProgressBar = false;
 const participantId = getParticipantId();
 const imageBaseUrl = "https://cdn.jsdelivr.net/gh/ubinici/thesis-experiment@main/github_assets/";
+const previewDurationMs = 400;
+const experimentVersion = "2026-08-12";
 
-// For counterbalanced collection later, uncomment this line.
+// Select one of the four counterbalanced workbook lists per participant session.
 GetTable("items.csv").setGroupColumn("group");
+
+// Increment on entry so concurrent participants rotate across A/B/C/D rather
+// than waiting for the preceding participant to finish before the counter moves.
+SetCounter("counter", "inc", 1);
 
 newTrial("init",
     newVar("lastAttentionQuestion", "")
@@ -32,6 +38,9 @@ newTrial("init",
     newVar("lastListId", "")
         .global()
     ,
+    newVar("globalTrialSequenceIndex", 0)
+        .global()
+    ,
     newTimer("init-pause", 1)
         .start()
         .wait()
@@ -42,13 +51,16 @@ newTrial("instructions",
     newText("title", "Referential prediction experiment")
         .css(stageTitleStyle())
     ,
-    newText("instructions-1", "On each trial, you will see two objects and hear the beginning of a description, such as \"Click on the yellow...\"")
+    newText("instructions-1", "On each trial, you will see two objects. The speaker always saw the original full-color scene.")
         .css(stageParagraphStyle())
     ,
-    newText("instructions-2", "Press F to choose the left object or J to choose the right object. Then rate how confident you are in your choice.")
+    newText("instructions-2", "Your display may show that scene in full color or with its color information removed. You will not be told the original colors of grayscale objects.")
         .css(stageParagraphStyle())
     ,
-    newText("instructions-3", "Some displays may be grayscale. In those cases, answer based on which object you think the speaker is more likely to describe.")
+    newText("instructions-3", "You will hear the beginning of the speaker's description, such as \"Click on the yellow...\" Wait until the phrase has ended, then choose the object you think the speaker is more likely to refer to.")
+        .css(stageParagraphStyle())
+    ,
+    newText("instructions-4", "Press F for the left object or J for the right object. Then rate your confidence from 1 to 5.")
         .css(stageParagraphStyle())
     ,
     newButton("start", "Start practice")
@@ -56,10 +68,11 @@ newTrial("instructions",
     ,
     newCanvas("instructions-screen", 920, 560)
         .add("center at 50%", 0, getText("title"))
-        .add("center at 50%", 92, getText("instructions-1"))
-        .add("center at 50%", 178, getText("instructions-2"))
-        .add("center at 50%", 264, getText("instructions-3"))
-        .add("center at 50%", 388, getButton("start"))
+        .add("center at 50%", 78, getText("instructions-1"))
+        .add("center at 50%", 150, getText("instructions-2"))
+        .add("center at 50%", 242, getText("instructions-3"))
+        .add("center at 50%", 344, getText("instructions-4"))
+        .add("center at 50%", 448, getButton("start"))
         .print("center at 50vw", "top at 12vh")
     ,
     getButton("start")
@@ -115,16 +128,47 @@ function choiceTrial(label, row) {
         newVar("choice_key", "")
             .log("final")
         ,
+        newVar("choice_side", "")
+            .log("final")
+        ,
+        newVar("chosen_object", "")
+            .log("final")
+        ,
         newVar("chosen_role", "")
+            .log("final")
+        ,
+        newVar("selected_color_associated", row.trial_type == "critical" ? "" : "NA")
             .log("final")
         ,
         newVar("choice_correct", hasCorrectKey ? "0" : "NA")
             .log("final")
         ,
+        newVar("trial_sequence_index", "")
+            .log("final")
+        ,
+        newVar("display_start_time_ms", 0)
+        ,
+        newVar("audio_start_time_ms", 0)
+        ,
         newVar("choice_start_time_ms", 0)
+        ,
+        newVar("preview_elapsed_ms", "")
+            .log("final")
+        ,
+        newVar("audio_playback_ms", "")
+            .log("final")
         ,
         newVar("choice_rt_ms", "")
             .log("final")
+        ,
+        newVar("display_to_choice_rt_ms", "")
+            .log("final")
+        ,
+        getVar("globalTrialSequenceIndex")
+            .set(v => v + 1)
+        ,
+        getVar("trial_sequence_index")
+            .set(getVar("globalTrialSequenceIndex"))
         ,
         getVar("lastAttentionQuestion")
             .set(row.attention_question)
@@ -155,6 +199,9 @@ function choiceTrial(label, row) {
         ,
         newImage("right-image", rightImageVal)
             .size(300, 300)
+        ,
+        newAudio("cue", row.audio)
+            .log()
         ,
         newText("left-key", "F")
             .css({
@@ -193,12 +240,32 @@ function choiceTrial(label, row) {
             .print("center at 50vw", "top at 12vh")
             .log()
         ,
-        getVar("choice_start_time_ms")
+        getVar("display_start_time_ms")
             .set(v => Date.now())
         ,
-        newAudio("cue", row.audio)
-            .log()
+        newTimer("preview", previewDurationMs)
+            .start()
+            .wait()
+        ,
+        getVar("preview_elapsed_ms")
+            .set(getVar("display_start_time_ms"))
+            .set(v => Date.now() - v)
+        ,
+        getVar("audio_start_time_ms")
+            .set(v => Date.now())
+        ,
+        getAudio("cue")
             .play()
+        ,
+        getAudio("cue")
+            .wait("first")
+        ,
+        getVar("audio_playback_ms")
+            .set(getVar("audio_start_time_ms"))
+            .set(v => Date.now() - v)
+        ,
+        getVar("choice_start_time_ms")
+            .set(v => Date.now())
         ,
         newKey("choice", "FJ")
             .log("first")
@@ -208,13 +275,33 @@ function choiceTrial(label, row) {
             .set(getVar("choice_start_time_ms"))
             .set(v => Date.now() - v)
         ,
+        getVar("display_to_choice_rt_ms")
+            .set(getVar("display_start_time_ms"))
+            .set(v => Date.now() - v)
+        ,
         getVar("choice_key")
             .set(getKey("choice"))
         ,
         getKey("choice")
             .test.pressed("F")
-            .success(getVar("chosen_role").set(row.left_role))
-            .failure(getVar("chosen_role").set(row.right_role))
+            .success(
+                getVar("choice_side").set("left")
+                ,
+                getVar("chosen_object").set(row.left_object)
+                ,
+                getVar("chosen_role").set(row.left_role)
+                ,
+                getVar("selected_color_associated").set(primaryChoiceCode(row.trial_type, row.left_role))
+            )
+            .failure(
+                getVar("choice_side").set("right")
+                ,
+                getVar("chosen_object").set(row.right_object)
+                ,
+                getVar("chosen_role").set(row.right_role)
+                ,
+                getVar("selected_color_associated").set(primaryChoiceCode(row.trial_type, row.right_role))
+            )
         ,
         getKey("choice")
             .test.pressed(hasCorrectKey ? row.correct_key : "__NO_CORRECT_KEY__")
@@ -232,10 +319,10 @@ function choiceTrial(label, row) {
         newText("confidence-hint", "Click a number or press the matching key.")
             .css(stageHintStyle())
         ,
-        newText("confidence-low", "Not confident")
+        newText("confidence-low", "Not confident at all")
             .css(endpointLabelStyle("right"))
         ,
-        newText("confidence-high", "Very confident")
+        newText("confidence-high", "Completely confident")
             .css(endpointLabelStyle("left"))
         ,
         newVar("confidence_response", "")
@@ -314,6 +401,7 @@ function choiceTrial(label, row) {
             .test.selected(getButton("confidence-5"))
             .success(getVar("confidence_response").set("5"))
     )
+    .log("experiment_version", experimentVersion)
     .log("participant_id", participantId)
     .log("trial_type", row.trial_type)
     .log("block", row.block)
@@ -335,7 +423,17 @@ function choiceTrial(label, row) {
     .log("right_role", row.right_role)
     .log("attention_question", row.attention_question)
     .log("attention_key", row.attention_key)
-    .log("correct_key", row.correct_key);
+    .log("correct_key", row.correct_key)
+    .log("preview_duration_ms", previewDurationMs)
+    .log("choice_rt_origin", "audio_offset");
+}
+
+function primaryChoiceCode(trialType, role) {
+    if (trialType != "critical") {
+        return "NA";
+    }
+
+    return role == "color_associated" ? "1" : "0";
 }
 
 function githubImageUrl(imagePath) {
@@ -359,13 +457,13 @@ function getParticipantId() {
 
     const storageKey = "thesis_experiment_participant_id";
     try {
-        const existingId = window.localStorage.getItem(storageKey);
+        const existingId = window.sessionStorage.getItem(storageKey);
         if (existingId) {
             return existingId;
         }
 
         const generatedId = "anon_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
-        window.localStorage.setItem(storageKey, generatedId);
+        window.sessionStorage.setItem(storageKey, generatedId);
         return generatedId;
     }
     catch (error) {
@@ -417,6 +515,10 @@ function attentionTrial(label) {
             .set(getVar("lastListId"))
             .log("final")
         ,
+        newVar("attention_after_trial_index", "")
+            .set(getVar("globalTrialSequenceIndex"))
+            .log("final")
+        ,
         newVar("attention_response_key", "")
             .log("final")
         ,
@@ -451,6 +553,7 @@ function attentionTrial(label) {
             .start()
             .wait()
     )
+    .log("experiment_version", experimentVersion)
     .log("participant_id", participantId)
     .log("trial_type", "attention")
     .log("attention_label", label)
@@ -535,6 +638,7 @@ function primaryButtonStyle() {
 }
 
 Sequence(
+    "counter",
     "init",
     "instructions",
     "practice",
